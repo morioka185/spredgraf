@@ -113,8 +113,18 @@ const SpreadsheetChartViewer = () => {
     const DataComponent = chartType === 'line' ? Line : Bar;
     const isPercentage = selectedMetric.includes('%');
 
-    // 平均値の計算
-    const values = data.map(item => item[selectedMetric]).filter(value => value != null);
+    // 今日の日付を取得
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);  // 時刻部分をリセット
+
+    // 今日までのデータのみをフィルタリングして平均値を計算
+    const values = data
+      .filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate <= today;
+      })
+      .map(item => item[selectedMetric])
+      .filter(value => value != null);
     const average = values.reduce((sum, value) => sum + value, 0) / values.length;
 
     // カスタムツールチップの内容
